@@ -4,6 +4,7 @@ Blue
 Yellow
 
 AK
+AL
 AZ
 AR
 CA
@@ -30,6 +31,7 @@ MT
 NE
 NV
 NH
+NY
 NJ
 NC
 ND
