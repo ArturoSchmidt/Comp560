@@ -19,7 +19,6 @@ class InputReader():
         states = {}
         breakCount = 0
         adjacencyList = defaultdict(set)
-
         #read stdin line by line
         for line in file:
             #use breakCount to keep track of current section (either colors, mapPositions or adjacencyList)
@@ -34,6 +33,7 @@ class InputReader():
                     newState = State(line)
                     states[line] = newState
                 else:
+                    # creates adjacency list and appends to states those that werent explicitely stated in previous breakCount
                     elements = line.split()
                     startState = elements[0] + '\n'
                     if startState not in states:
@@ -61,7 +61,13 @@ class Map(object):
         self.map = adjacencyList
         self.colors = colors
 
+
     def hillClimbingColoring(self):
+    # misplaced == number of states that are either not colored or have the same color as one of their neighbors
+    # main algorithm functionality: 
+    # state's start with color value from initialized state (None)
+    # we iterate through adjacency list of states, for each state we change its color if changing it does not cause a violation
+    # this is done until an iteration does not change the map or the number of misplaced tiles is zero.
         misplaced = len(self.map)
         changed = True
         totalChanges = 0
@@ -91,8 +97,6 @@ class Map(object):
         for state in self.map:
             print(state.name + ' ' + state.color)
        
-
-
     #checks if any the neighbors of a passed state are the same as its color
     def checkChange(self, key, color):
         neighbors = self.map[key]
@@ -101,6 +105,8 @@ class Map(object):
                 return False
         return True
 
+
+    # check correctness of full map. If any state is None or one of its neighbors is the same color as itself false is returned
     def checkValidity(self):
         for state, neighborList in self.map.items():
             for neighbor in neighborList:
@@ -109,11 +115,13 @@ class Map(object):
                     return False
         return True
 
-    def repeatedHillClimbing(self, timems):
+    def repeatedHillClimbing(self, times):
+        # function that is called from main, takes in number of seconds to be run
+        # runs hillClimbing until it finds a valid solution or it times out
         start = time.time()
         current = 0
         misplaced = float('inf')
-        while((current - start) < timems and misplaced != 0):
+        while((current - start) < times and misplaced != 0):
             (misplaced, totalChanges) = self.hillClimbingColoring()
             current = time.time()
         if misplaced == 0:
@@ -123,17 +131,17 @@ class Map(object):
 
 def main():
 
-    # initialization code
+    # initialization code: starts timer and passes input into parser
     startTime = time.time()
     ir = InputReader()
     (colors, positions, adjacencyList) = ir.parseMapFromStdIn()
 
-    # map creation and function call
+    # map creation and repeating hillClimbing call
     map = Map(adjacencyList,colors)
-
     (foundRes , totalChanges) = map.repeatedHillClimbing(1)
     endTime = time.time()
 
+    # checks if map ended in a valid state and prints corresponding output
     output = map.checkValidity()
     if output:
         map.printMap()     
