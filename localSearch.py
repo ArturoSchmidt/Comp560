@@ -117,7 +117,6 @@ class Map(object):
         for state, neighborList in self.map.items():
             for neighbor in neighborList:
                 if state.color == neighbor.color or neighbor.color == None or state.color == None:
-                    print(state.name, state.color , neighbor.name, neighbor.color)
                     return False
         return True
 
@@ -131,6 +130,7 @@ class Map(object):
         current = 0
         misplaced = float('inf')
         while((current - start) < times):
+            #resets the color of the states of the map to initial setting of None
             self.reset()
             (misplaced, totalChanges) = self.hillClimbingColoring()
             if misplaced == 0:
